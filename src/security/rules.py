@@ -1,0 +1,105 @@
+# ==========================================
+# LANGUAGE RULES
+# ==========================================
+
+LANGUAGE_RULES = {
+
+    "Python": [
+        "def ",
+        "import ",
+        "print(",
+        "eval(",
+        "exec("
+    ],
+
+    "JavaScript": [
+        "console.log",
+        "function ",
+        "innerHTML",
+        "=>"
+    ],
+
+    "C": [
+        "#include",
+        "printf(",
+        "scanf("
+    ],
+
+    "Java": [
+        "public class",
+        "System.out.println",
+        "public static void main"
+    ]
+}
+
+
+# ==========================================
+# VULNERABILITY RULES
+# ==========================================
+
+VULN_RULES = {
+
+    "RCE": [
+        "eval(",
+        "exec(",
+        "os.system(",
+        "subprocess.call(",
+        "subprocess.Popen("
+    ],
+
+    "SQLI": [
+        "SELECT * FROM",
+        "\" + user_input",
+        "' + user_input"
+    ],
+
+    "XSS": [
+        "innerHTML",
+        "document.write("
+    ],
+
+    "PATH_TRAVERSAL": [
+        "../",
+        "open(user_input)",
+        "open(path)"
+    ],
+
+    "COMMAND_INJECTION": [
+        "os.system(",
+        "subprocess.run("
+    ]
+}
+
+
+# ==========================================
+# LANGUAGE DETECTION
+# ==========================================
+
+def detect_language_rule(code):
+
+    for lang, patterns in LANGUAGE_RULES.items():
+
+        for p in patterns:
+
+            if p in code:
+
+                return lang
+
+    return None
+
+
+# ==========================================
+# VULN DETECTION
+# ==========================================
+
+def detect_vulnerability_rule(code):
+
+    for vuln, patterns in VULN_RULES.items():
+
+        for p in patterns:
+
+            if p in code:
+
+                return vuln
+
+    return None
