@@ -1,10 +1,26 @@
-RISK_LEVELS = {
+VULN_CLASSES = [
 
-    "CRITICAL": 80,
+    "SQLI",
 
-    "HIGH": 60,
+    "XSS",
 
-    "MEDIUM": 40,
+    "RCE",
 
-    "LOW": 20
-}
+    "PATH_TRAVERSAL",
+
+    "COMMAND_INJECTION",
+
+    "SAFE"
+]
+
+
+LANGUAGE_CLASSES = [
+
+    "Python",
+
+    "JavaScript",
+
+    "Java",
+
+    "C"
+]

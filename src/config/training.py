@@ -1,10 +1,5 @@
-from src.config.base import *
+BATCH_SIZE = 32
 
-TRAINING_CONFIG = {
+EPOCHS = 5
 
-    "batch_size": BATCH_SIZE,
-
-    "epochs": EPOCHS,
-
-    "learning_rate": LR
-}
+LR = 1e-3

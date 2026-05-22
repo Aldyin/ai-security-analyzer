@@ -19,7 +19,7 @@ from src.infrastructure.tokenizers.hf_tokenizer import (
 
 from src.logging.logger import get_logger
 
-from src.config.base import *
+from src.config import *
 
 
 logger = get_logger(

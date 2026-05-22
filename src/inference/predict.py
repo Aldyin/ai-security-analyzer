@@ -6,11 +6,11 @@ from src.infrastructure.models.transformer_lang import (
 )
 
 from src.infrastructure.tokenizers.hf_tokenizer import (
-    load_tokenizer
+    load_tokenizer,
+    encode_code
 )
 
-from src.config.base import *
-
+from src.config import *
 
 MODEL_PATH = "artifacts/model_lang.pth"
 
@@ -41,9 +41,7 @@ model.eval()
 
 def predict_language(code: str):
 
-    encoded = tokenizer.encode(code)
-
-    ids = encoded.ids[:MAX_LEN]
+    ids = encode_code(code)[:MAX_LEN]
 
     if len(ids) < MAX_LEN:
         ids += [PAD_IDX] * (MAX_LEN - len(ids))
@@ -60,15 +58,35 @@ def predict_language(code: str):
         probs = F.softmax(
             logits,
             dim=1
-        )[0]
-
-    result = {}
-
-    for i, label in enumerate(LANGUAGE_CLASSES):
-
-        result[label] = round(
-            probs[i].item(),
-            4
         )
 
-    return result
+        confidence, pred = torch.max(
+            probs,
+            dim=1
+        )
+
+    language = LANGUAGE_CLASSES[
+        pred.item()
+    ]
+
+    return {
+
+        "label": language,
+
+        "confidence": round(
+            confidence.item() * 100,
+            2
+        ),
+
+        "probabilities": {
+
+            LANGUAGE_CLASSES[i]: round(
+                probs[0][i].item() * 100,
+                2
+            )
+
+            for i in range(
+                len(LANGUAGE_CLASSES)
+            )
+        }
+    }

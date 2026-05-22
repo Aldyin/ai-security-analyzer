@@ -1,14 +1,13 @@
-from src.config.base import *
+EMBED_DIM = 128
 
-MODEL_CONFIG = {
+NUM_HEADS = 4
 
-    "vocab_size": VOCAB_SIZE,
+FF_DIM = 256
 
-    "embed_dim": EMBED_DIM,
+NUM_LAYERS = 2
 
-    "num_heads": NUM_HEADS,
+MAX_LEN = 128
 
-    "ff_dim": FF_DIM,
+PAD_IDX = 0
 
-    "num_layers": NUM_LAYERS
-}
+NUM_CLASSES = 4

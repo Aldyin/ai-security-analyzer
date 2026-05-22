@@ -6,7 +6,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 
 from torch.utils.data import DataLoader
 
-from src.config.base import *
+from src.config import *
 
 from src.infrastructure.datasets.vulnerability_dataset import (
     VulnerabilityDataset

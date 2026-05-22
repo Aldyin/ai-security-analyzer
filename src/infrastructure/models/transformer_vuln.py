@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from src.config.base import *
+from src.config import *
 
 
 class PositionalEncoding(nn.Module):

@@ -103,3 +103,41 @@ def detect_vulnerability_rule(code):
                 return vuln
 
     return None
+
+
+# ==========================================
+# RISK LEVELS
+# ==========================================
+
+RISK_MAP = {
+
+    "SAFE": "LOW",
+
+    "SQLI": "HIGH",
+
+    "XSS": "MEDIUM",
+
+    "RCE": "CRITICAL",
+
+    "PATH_TRAVERSAL": "HIGH",
+
+    "COMMAND_INJECTION": "CRITICAL"
+}
+
+
+# ==========================================
+# RISK CALCULATION
+# ==========================================
+
+def calculate_risk(
+    vulnerability: str,
+    confidence: float
+):
+
+    if confidence < 50:
+        return "LOW"
+
+    return RISK_MAP.get(
+        vulnerability,
+        "UNKNOWN"
+    )

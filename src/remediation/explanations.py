@@ -1,17 +1,28 @@
-from src.remediation.fix_templates import FIX_TEMPLATES
+EXPLANATIONS = {
+
+    "SAFE":
+        "No vulnerabilities detected.",
+
+    "SQLI":
+        "SQL Injection allows attackers to manipulate database queries.",
+
+    "XSS":
+        "Cross-Site Scripting allows attackers to inject malicious JavaScript.",
+
+    "RCE":
+        "Remote Code Execution allows attackers to execute arbitrary code.",
+
+    "PATH_TRAVERSAL":
+        "Path Traversal allows attackers to access restricted filesystem paths.",
+
+    "COMMAND_INJECTION":
+        "Command Injection allows attackers to execute system commands."
+}
 
 
-def get_explanation(vulnerability: str):
+def generate_explanation(vulnerability: str):
 
-    if vulnerability not in FIX_TEMPLATES:
-        return "No explanation available."
-
-    return FIX_TEMPLATES[vulnerability]["explanation"]
-
-
-def get_risk_level(vulnerability: str):
-
-    if vulnerability not in FIX_TEMPLATES:
-        return "UNKNOWN"
-
-    return FIX_TEMPLATES[vulnerability]["risk"]
+    return EXPLANATIONS.get(
+        vulnerability,
+        "Unknown vulnerability."
+    )

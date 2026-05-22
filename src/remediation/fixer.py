@@ -1,120 +1,41 @@
-# ==========================================
-# FIX TEMPLATES
-# ==========================================
+def generate_fix(
+    vulnerability: str,
+    code: str
+):
 
-FIXES = {
+    if vulnerability == "SQLI":
 
-    # ======================================
-    # RCE
-    # ======================================
+        return code.replace(
+            '"+ user_input +"',
+            "?"
+        )
 
-    ("RCE", "Python"):
+    elif vulnerability == "XSS":
 
-'''
-# Dangerous:
-# eval(user_input)
+        return code.replace(
+            "innerHTML",
+            "textContent"
+        )
 
-# Safe alternative:
+    elif vulnerability == "RCE":
 
-import ast
+        return (
+            "# Avoid eval/exec usage\n"
+            + code
+        )
 
-safe_input = ast.literal_eval(user_input)
-''',
+    elif vulnerability == "PATH_TRAVERSAL":
 
-    # ======================================
-    # COMMAND INJECTION
-    # ======================================
+        return (
+            "# Validate file paths\n"
+            + code
+        )
 
-    ("COMMAND_INJECTION", "Python"):
+    elif vulnerability == "COMMAND_INJECTION":
 
-'''
-# Dangerous:
-# os.system(user_input)
+        return (
+            "# Avoid shell command execution\n"
+            + code
+        )
 
-# Safe alternative:
-
-import subprocess
-
-subprocess.run(
-    ["ls", "-la"],
-    check=True
-)
-''',
-
-    # ======================================
-    # SQLI
-    # ======================================
-
-    ("SQLI", "Python"):
-
-'''
-# Dangerous:
-# query = "SELECT * FROM users WHERE id=" + user_id
-
-# Safe alternative:
-
-cursor.execute(
-    "SELECT * FROM users WHERE id=%s",
-    (user_id,)
-)
-''',
-
-    # ======================================
-    # XSS
-    # ======================================
-
-    ("XSS", "JavaScript"):
-
-'''
-// Dangerous:
-// element.innerHTML = user_input
-
-// Safe alternative:
-
-element.textContent = user_input;
-''',
-
-    # ======================================
-    # PATH TRAVERSAL
-    # ======================================
-
-    ("PATH_TRAVERSAL", "Python"):
-
-'''
-# Dangerous:
-# open(user_input)
-
-# Safe alternative:
-
-import os
-
-base = "/safe_directory"
-
-path = os.path.abspath(
-    os.path.join(base, user_input)
-)
-
-if path.startswith(base):
-    open(path)
-'''
-}
-
-
-# ==========================================
-# MAIN API
-# ==========================================
-
-def generate_fix(vulnerability, language, code):
-
-    key = (
-        vulnerability,
-        language
-    )
-
-    if key in FIXES:
-
-        return FIXES[key]
-
-    return (
-        "No language-specific fix available."
-    )
+    return code

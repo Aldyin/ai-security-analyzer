@@ -19,7 +19,9 @@ from src.application.use_cases.predict_vulnerability import (
 )
 
 from src.security.rules import (
-    calculate_risk
+    calculate_risk,
+    detect_language_rule,
+    detect_vulnerability_rule
 )
 
 from src.remediation.explanations import (
@@ -45,31 +47,71 @@ def analyze_code(code: str):
     validate_code(code)
 
     # ==========================================
-    # LANGUAGE
+    # LANGUAGE DETECTION
     # ==========================================
 
-    language = predict_language(
-        code
-    )
+    ai_language = predict_language(code)
+
+    rule_language = detect_language_rule(code)
+
+    if rule_language is not None:
+
+        language = {
+
+            "label": rule_language,
+
+            "confidence": 99.9,
+
+            "source": "RULE_ENGINE",
+
+            "probabilities": {
+                rule_language: 99.9
+            }
+        }
+
+    else:
+
+        language = {
+
+            **ai_language,
+
+            "source": "AI_MODEL"
+        }
 
     logger.info(
         f"Detected language: {language}"
     )
 
     # ==========================================
-    # VULNERABILITY
+    # VULNERABILITY DETECTION
     # ==========================================
 
-    vulnerability, confidence = (
-        predict_vulnerability(code)
-    )
+    ai_vuln = predict_vulnerability(code)
+
+    rule_vuln = detect_vulnerability_rule(code)
+
+    if rule_vuln is not None:
+
+        vulnerability = rule_vuln
+
+        confidence = 99.9
+
+        detection_source = "RULE_ENGINE"
+
+    else:
+
+        vulnerability = ai_vuln["label"]
+
+        confidence = ai_vuln["confidence"]
+
+        detection_source = "AI_MODEL"
 
     logger.info(
         f"Detected vulnerability: {vulnerability}"
     )
 
     # ==========================================
-    # RISK
+    # RISK ANALYSIS
     # ==========================================
 
     risk = calculate_risk(
@@ -86,7 +128,7 @@ def analyze_code(code: str):
     )
 
     # ==========================================
-    # FIX
+    # AUTO FIX
     # ==========================================
 
     fixed_code = generate_fix(
@@ -115,14 +157,20 @@ def analyze_code(code: str):
     )
 
     return build_response(
+
         language=language,
+
         vulnerability=vulnerability,
-        confidence=round(
-            confidence * 100,
-            2
-        ),
+
+        confidence=confidence,
+
         risk=risk,
+
         explanation=explanation,
+
         fixed_code=fixed_code,
-        message=message
+
+        message=message,
+
+        detection_source=detection_source
     )
