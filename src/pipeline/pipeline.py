@@ -1,6 +1,6 @@
 # src/pipeline/pipeline.py
 
-from src.utils.logger import get_logger
+from src.logging.logger import get_logger
 
 from src.pipeline.steps.clean import clean
 from src.pipeline.steps.generate_data import generate

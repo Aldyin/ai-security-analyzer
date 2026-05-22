@@ -2,7 +2,7 @@ import random
 import pandas as pd
 import os
 
-from src.utils.logger import get_logger
+from src.logging.logger import get_logger
 
 logger = get_logger("pipeline.augment", "logs/pipeline.log")
 

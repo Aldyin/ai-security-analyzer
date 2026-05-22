@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from src.utils.logger import get_logger
+from src.logging.logger import get_logger
 
 logger = get_logger("pipeline.generate", "logs/pipeline.log")
 

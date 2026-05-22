@@ -1,5 +1,5 @@
 import os
-from src.utils.logger import get_logger
+from src.logging.logger import get_logger
 
 logger = get_logger("pipeline.clean", "logs/pipeline.log")
 

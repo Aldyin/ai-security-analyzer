@@ -17,7 +17,7 @@ from src.infrastructure.tokenizers.hf_tokenizer import (
     load_tokenizer
 )
 
-from src.utils.logger import get_logger
+from src.logging.logger import get_logger
 
 from src.config.base import *
 
