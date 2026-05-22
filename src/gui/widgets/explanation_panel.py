@@ -1,33 +1,37 @@
 import tkinter as tk
 
-from tkinter.scrolledtext import ScrolledText
+from tkinter.scrolledtext import (
+    ScrolledText
+)
 
 
-class ExplanationPanel(tk.LabelFrame):
+class ExplanationPanel(tk.Frame):
 
     def __init__(self, parent):
 
-        super().__init__(
-            parent,
-            text="Explanation",
-            font=("Arial", 12, "bold")
+        super().__init__(parent)
+
+        tk.Label(
+            self,
+            text="Explanation"
+        ).pack(
+            anchor="w"
         )
 
         self.text = ScrolledText(
             self,
-            height=8,
-            font=("Consolas", 11),
-            wrap=tk.WORD
+            height=10
         )
 
         self.text.pack(
-            fill=tk.BOTH,
-            expand=True,
-            padx=5,
-            pady=5
+            fill="both",
+            expand=True
         )
 
-    def set_explanation(self, explanation):
+    def update_explanation(
+        self,
+        explanation
+    ):
 
         self.text.delete(
             "1.0",

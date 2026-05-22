@@ -1,33 +1,37 @@
 import tkinter as tk
 
-from tkinter.scrolledtext import ScrolledText
+from tkinter.scrolledtext import (
+    ScrolledText
+)
 
 
-class FixPanel(tk.LabelFrame):
+class FixPanel(tk.Frame):
 
     def __init__(self, parent):
 
-        super().__init__(
-            parent,
-            text="Suggested Fix",
-            font=("Arial", 12, "bold")
+        super().__init__(parent)
+
+        tk.Label(
+            self,
+            text="Suggested Fix"
+        ).pack(
+            anchor="w"
         )
 
         self.text = ScrolledText(
             self,
-            height=16,
-            font=("Consolas", 11),
-            wrap=tk.WORD
+            height=20
         )
 
         self.text.pack(
-            fill=tk.BOTH,
-            expand=True,
-            padx=5,
-            pady=5
+            fill="both",
+            expand=True
         )
 
-    def set_fix(self, fix_code):
+    def update_fix(
+        self,
+        fixed_code
+    ):
 
         self.text.delete(
             "1.0",
@@ -36,5 +40,5 @@ class FixPanel(tk.LabelFrame):
 
         self.text.insert(
             tk.END,
-            fix_code
+            fixed_code
         )
