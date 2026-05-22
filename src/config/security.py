@@ -18,9 +18,14 @@ LANGUAGE_CLASSES = [
 
     "Python",
 
-    "JavaScript",
+    "C",
 
     "Java",
 
-    "C"
+    "JavaScript"
 ]
+
+
+CONFIDENCE_THRESHOLD = 65.0
+
+SAFE_CONFIDENCE_THRESHOLD = 50.0

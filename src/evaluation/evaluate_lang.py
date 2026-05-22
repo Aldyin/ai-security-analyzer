@@ -1,5 +1,9 @@
 from sklearn.metrics import (
-    classification_report
+    classification_report,
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score
 )
 
 from src.inference.predict import (
@@ -10,6 +14,7 @@ from src.inference.predict import (
 def evaluate(samples):
 
     y_true = []
+
     y_pred = []
 
     for code, label in samples:
@@ -18,13 +23,37 @@ def evaluate(samples):
 
         y_true.append(label)
 
-        y_pred.append(pred)
+        y_pred.append(
+            pred["label"]
+        )
 
-    report = classification_report(
-        y_true,
-        y_pred
+    print("\n===== LANGUAGE EVALUATION =====")
+
+    print(
+        f"Accuracy : "
+        f"{accuracy_score(y_true, y_pred):.4f}"
     )
 
-    print(report)
+    print(
+        f"Precision: "
+        f"{precision_score(y_true, y_pred, average='weighted'):.4f}"
+    )
 
-    return report
+    print(
+        f"Recall   : "
+        f"{recall_score(y_true, y_pred, average='weighted'):.4f}"
+    )
+
+    print(
+        f"F1 Score : "
+        f"{f1_score(y_true, y_pred, average='weighted'):.4f}"
+    )
+
+    print("\n===== CLASSIFICATION REPORT =====")
+
+    print(
+        classification_report(
+            y_true,
+            y_pred
+        )
+    )

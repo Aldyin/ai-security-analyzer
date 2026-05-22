@@ -61,7 +61,7 @@ def train():
         num_heads=NUM_HEADS,
         ff_dim=FF_DIM,
         num_layers=NUM_LAYERS,
-        num_classes=NUM_CLASSES
+        num_classes=LANGUAGE_NUM_CLASSES
     ).to(device)
 
     optimizer = torch.optim.Adam(

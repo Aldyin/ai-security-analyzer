@@ -1,5 +1,4 @@
 def build_response(
-
     language,
     vulnerability,
     confidence,
@@ -8,7 +7,6 @@ def build_response(
     fixed_code,
     message,
     detection_source
-
 ):
 
     return {

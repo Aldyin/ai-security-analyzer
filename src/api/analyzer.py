@@ -19,9 +19,8 @@ from src.application.use_cases.predict_vulnerability import (
 )
 
 from src.security.rules import (
-    calculate_risk,
-    detect_language_rule,
-    detect_vulnerability_rule
+    detect_vulnerability_rule,
+    calculate_risk
 )
 
 from src.remediation.explanations import (
@@ -30,6 +29,10 @@ from src.remediation.explanations import (
 
 from src.remediation.fixer import (
     generate_fix
+)
+
+from src.config import (
+    CONFIDENCE_THRESHOLD
 )
 
 
@@ -50,89 +53,113 @@ def analyze_code(code: str):
     # LANGUAGE DETECTION
     # ==========================================
 
-    ai_language = predict_language(code)
-
-    rule_language = detect_language_rule(code)
-
-    if rule_language is not None:
-
-        language = {
-
-            "label": rule_language,
-
-            "confidence": 99.9,
-
-            "source": "RULE_ENGINE",
-
-            "probabilities": {
-                rule_language: 99.9
-            }
-        }
-
-    else:
-
-        language = {
-
-            **ai_language,
-
-            "source": "AI_MODEL"
-        }
+    language = predict_language(
+        code
+    )
 
     logger.info(
         f"Detected language: {language}"
     )
 
     # ==========================================
-    # VULNERABILITY DETECTION
+    # RULE-BASED DETECTION
     # ==========================================
 
-    ai_vuln = predict_vulnerability(code)
+    rule_vulnerability = (
+        detect_vulnerability_rule(code)
+    )
 
-    rule_vuln = detect_vulnerability_rule(code)
+    vulnerability = []
 
-    if rule_vuln is not None:
+    detection_source = "AI_MODEL"
 
-        vulnerability = rule_vuln
+    # ==========================================
+    # RULE ENGINE PRIORITY
+    # ==========================================
 
-        confidence = 99.9
+    if rule_vulnerability:
 
-        detection_source = "RULE_ENGINE"
+        vulnerability.append({
+
+            "label": rule_vulnerability,
+
+            "confidence": 99.9
+        })
+
+        detection_source = (
+            "RULE_ENGINE"
+        )
+
+        logger.info(
+            f"Rule matched: {rule_vulnerability}"
+        )
+
+    # ==========================================
+    # AI FALLBACK
+    # ==========================================
 
     else:
 
-        vulnerability = ai_vuln["label"]
+        ai_prediction = (
+            predict_vulnerability(code)
+        )
 
-        confidence = ai_vuln["confidence"]
+        vulnerability = (
+            ai_prediction["predictions"]
+        )
 
-        detection_source = "AI_MODEL"
-
-    logger.info(
-        f"Detected vulnerability: {vulnerability}"
-    )
+        logger.info(
+            f"AI predictions: {vulnerability}"
+        )
 
     # ==========================================
-    # RISK ANALYSIS
+    # PRIMARY VULNERABILITY
+    # ==========================================
+
+    primary_vulnerability = vulnerability[0][
+        "label"
+    ]
+
+    primary_confidence = vulnerability[0][
+        "confidence"
+    ]
+
+    # ==========================================
+    # SAFE THRESHOLD
+    # ==========================================
+
+    if (
+        primary_confidence <
+        CONFIDENCE_THRESHOLD
+    ):
+
+        primary_vulnerability = "SAFE"
+
+    # ==========================================
+    # RISK
     # ==========================================
 
     risk = calculate_risk(
-        vulnerability,
-        confidence
+        primary_vulnerability,
+        primary_confidence
     )
 
     # ==========================================
     # EXPLANATION
     # ==========================================
 
-    explanation = generate_explanation(
-        vulnerability
+    explanation = (
+        generate_explanation(
+            primary_vulnerability
+        )
     )
 
     # ==========================================
-    # AUTO FIX
+    # FIX
     # ==========================================
 
     fixed_code = generate_fix(
-        vulnerability,
+        primary_vulnerability,
         code
     )
 
@@ -140,16 +167,16 @@ def analyze_code(code: str):
     # MESSAGE
     # ==========================================
 
-    if vulnerability == "SAFE":
+    if primary_vulnerability == "SAFE":
 
         message = (
-            "No vulnerabilities detected"
+            "No vulnerability detected"
         )
 
     else:
 
         message = (
-            f"{vulnerability} detected"
+            f"{primary_vulnerability} detected"
         )
 
     logger.info(
@@ -160,9 +187,9 @@ def analyze_code(code: str):
 
         language=language,
 
-        vulnerability=vulnerability,
+        vulnerability=primary_vulnerability,
 
-        confidence=confidence,
+        confidence=primary_confidence,
 
         risk=risk,
 

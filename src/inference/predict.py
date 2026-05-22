@@ -1,4 +1,5 @@
 import torch
+
 import torch.nn.functional as F
 
 from src.infrastructure.models.transformer_lang import (
@@ -15,7 +16,8 @@ from src.config import *
 MODEL_PATH = "artifacts/model_lang.pth"
 
 device = torch.device(
-    "cuda" if torch.cuda.is_available() else "cpu"
+    "cuda" if torch.cuda.is_available()
+    else "cpu"
 )
 
 tokenizer = load_tokenizer()
@@ -26,7 +28,7 @@ model = TransformerClassifier(
     num_heads=NUM_HEADS,
     ff_dim=FF_DIM,
     num_layers=NUM_LAYERS,
-    num_classes=NUM_CLASSES
+    num_classes=LANGUAGE_NUM_CLASSES
 ).to(device)
 
 model.load_state_dict(
@@ -44,7 +46,10 @@ def predict_language(code: str):
     ids = encode_code(code)[:MAX_LEN]
 
     if len(ids) < MAX_LEN:
-        ids += [PAD_IDX] * (MAX_LEN - len(ids))
+
+        ids += [PAD_IDX] * (
+            MAX_LEN - len(ids)
+        )
 
     x = torch.tensor(
         [ids],

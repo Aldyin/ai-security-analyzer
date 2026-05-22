@@ -39,12 +39,16 @@ LANGUAGE_RULES = {
 
 VULN_RULES = {
 
-    "RCE": [
-        "eval(",
-        "exec(",
+    "COMMAND_INJECTION": [
         "os.system(",
+        "subprocess.run(",
         "subprocess.call(",
         "subprocess.Popen("
+    ],
+
+    "RCE": [
+        "eval(",
+        "exec("
     ],
 
     "SQLI": [
@@ -62,11 +66,6 @@ VULN_RULES = {
         "../",
         "open(user_input)",
         "open(path)"
-    ],
-
-    "COMMAND_INJECTION": [
-        "os.system(",
-        "subprocess.run("
     ]
 }
 

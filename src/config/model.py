@@ -1,3 +1,8 @@
+from src.config.security import (
+    VULN_CLASSES,
+    LANGUAGE_CLASSES
+)
+
 EMBED_DIM = 128
 
 NUM_HEADS = 4
@@ -10,4 +15,10 @@ MAX_LEN = 128
 
 PAD_IDX = 0
 
-NUM_CLASSES = 4
+LANGUAGE_NUM_CLASSES = len(
+    LANGUAGE_CLASSES
+)
+
+VULN_NUM_CLASSES = len(
+    VULN_CLASSES
+)

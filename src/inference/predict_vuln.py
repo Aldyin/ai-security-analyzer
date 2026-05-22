@@ -1,5 +1,4 @@
 import torch
-import torch.nn.functional as F
 
 from src.config import *
 
@@ -13,18 +12,28 @@ from src.infrastructure.tokenizers.hf_tokenizer import (
 
 
 model = VulnerabilityClassifier(
+
     vocab_size=30000,
+
     embed_dim=EMBED_DIM,
+
     num_heads=NUM_HEADS,
+
     ff_dim=FF_DIM,
+
     num_layers=NUM_LAYERS,
-    num_classes=len(VULN_CLASSES)
+
+    num_classes=VULN_NUM_CLASSES
+
 ).to(DEVICE)
 
 
 model.load_state_dict(
+
     torch.load(
+
         "artifacts/model_vuln.pth",
+
         map_location=DEVICE
     )
 )
@@ -34,39 +43,80 @@ model.eval()
 
 def predict_vulnerability(code: str):
 
-    tokens = encode_code(code)
+    tokens = encode_code(
+        code
+    )[:MAX_LEN]
+
+    if len(tokens) < MAX_LEN:
+
+        tokens += [PAD_IDX] * (
+            MAX_LEN - len(tokens)
+        )
 
     x = torch.tensor(
+
         [tokens],
+
         dtype=torch.long
+
     ).to(DEVICE)
 
     with torch.no_grad():
 
         logits = model(x)
 
-        probs = F.softmax(
-            logits,
-            dim=1
+        # ======================================
+        # MULTI-LABEL PROBABILITIES
+        # ======================================
+
+        probs = torch.sigmoid(
+            logits
         )
 
-        confidence, pred = torch.max(
-            probs,
-            dim=1
+    predictions = []
+
+    # ======================================
+    # THRESHOLD DETECTION
+    # ======================================
+
+    for i, prob in enumerate(
+        probs[0]
+    ):
+
+        score = round(
+            prob.item() * 100,
+            2
         )
 
-    vulnerability = VULN_CLASSES[
-        pred.item()
-    ]
+        # ======================================
+        # CALIBRATED THRESHOLD
+        # ======================================
+
+        if score >= 45:
+
+            predictions.append({
+
+                "label": VULN_CLASSES[i],
+
+                "confidence": score
+            })
+
+    # ======================================
+    # SAFE FALLBACK
+    # ======================================
+
+    if not predictions:
+
+        predictions.append({
+
+            "label": "SAFE",
+
+            "confidence": 100.0
+        })
 
     return {
 
-        "label": vulnerability,
-
-        "confidence": round(
-            confidence.item() * 100,
-            2
-        ),
+        "predictions": predictions,
 
         "probabilities": {
 
